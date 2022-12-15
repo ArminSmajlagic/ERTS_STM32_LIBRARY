@@ -10,8 +10,7 @@ volatile int delay = 0;
 // priority - defines SysTick priority
 // event - pokazivac na funkciju koju želimo da izvršimo na SysTick underflow
 
-void SysTickIRQ(uint32_t ticks, uint32_t clock, uint32_t priority, uint32_t curr_val);
-
+//,void (*event)()
 void Init_SysTick(uint32_t ticks, uint32_t clock, uint32_t priority, uint32_t curr_val,void (*event)());
 void SysTick_Delay(uint32_t period);
 void SysTick_Handler(void);
@@ -19,31 +18,42 @@ void SysTick_Scheduling(void);
 
 void (*func)();
 
-void Init_SysTick(uint32_t ticks,uint32_t clock, uint32_t priority, uint32_t curr_val, void (*event)()){
-	DelayPeriod = 0;
-	SysTick->CTRL = 0;
-	SysTick->LOAD = ticks - 1;
-	NVIC_SetPriority(SysTick_IRQn, priority);
-	SysTick->VAL = curr_val;
-	SysTick->CTRL |= clock;
-	NVIC_EnableIRQ(SysTick_IRQn);
-	func = event;	
+void Init_SysTick(uint32_t ticks,uint32_t clock, uint32_t priority, uint32_t curr_val,void (*event)()){
+	
+	DelayPeriod = 0;	// po zadanom nema delaya
+	delay = 0;
+	
+	SysTick->CTRL = 0; // onemoguciti SysTick IRQ i sat
+	
+	SysTick->LOAD = ticks - 1; //postavljanje reaload vrijednosti 
+	
+	NVIC_SetPriority(SysTick_IRQn, priority); // definisanje prioriteta SysTick_IRQ
+	
+	SysTick->VAL = curr_val; //resetovanje vrijednosti (trebalo bi biti nula)
+	
+	SysTick->CTRL |= clock; // odabir sata
+	
+	NVIC_EnableIRQ(SysTick_IRQn); // postavljanje enable bita na 1 za SysTick_IRQ
+	
+	func = event;	// definisanje eventa kojeg želimo izvršiti na underflow
 }
 
 void SysTick_Handler(void){
-	if(delay == 1){//if we use SysTick for delay only
+	//koristimo sys tick samo sa delay
+	if(delay == 1){
 		if(DelayPeriod > 0)
 			DelayPeriod--;
 	}
-	else{	//if we use SysTick for handeling event
+	//koristimo SysTick za vršenje neke radnje u fiksnim vremenskim intervalima
+	else{	
 		(*func)();
 	}
 }
 
 void SysTick_Delay(uint32_t period){
-	delay = 1;
-	DelayPeriod = period;
-	while(DelayPeriod != 0);
+	delay = 1; // 1 je za delay enabled
+	DelayPeriod = period; // definisanje perioda delaya
+	while(DelayPeriod != 0); // delay = DelayPeriod * (ticks-1)
 }
 
 //REQUIRES MORE PRECISION WITH DELAY AND INTERUPT LENGTH TIME

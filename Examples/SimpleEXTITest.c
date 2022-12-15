@@ -8,8 +8,14 @@ void some_func(void){
 }
 
 int main(void){
-	uint32_t linija = 0;
-	uint32_t prioritet = 0;
+	
+	int prioritet = 0;
+	int broj_linija = 15;
+	
+	int i;
+	
+	for(i=0; i < broj_linija;i++){
+		Init_EXTI(i,prioritet,some_func);
+	}
 
-	Init_EXTI(linija,prioritet,some_func);
 }

@@ -12,7 +12,7 @@ int main(void){
 	uint32_t clock = 0x00000007;
 	uint32_t prioritet = 3;
 	uint32_t vrijednost = 0;
-
 	Init_SysTick(ticks, clock, prioritet, vrijednost, some_func);
+	SysTick_Delay(500);
 	
 }

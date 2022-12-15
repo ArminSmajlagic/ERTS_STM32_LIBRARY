@@ -8,7 +8,7 @@ void (*func)();
 //priority - prioritet EXTIx interrupta
 //event - pokazivac na funkciju koju želimo izvršiti kada se trigeruje interrupt hanler
 
-void Init_EXTI(uint32_t line, uint32_t priority, void (*event)());
+void Init_EXTI(int line, int priority, void (*event)());
 
 void EXTI0_IRQHandler(void);
 void EXTI1_IRQHandler(void);
@@ -18,7 +18,7 @@ void EXTI4_IRQHandler(void);
 void EXTI9_5_IRQHandler(void);
 void EXTI15_10_IRQHandler(void);
 
-void Init_EXTI(uint32_t line, uint32_t priority, void (*event)()){
+void Init_EXTI(int line, int priority, void (*event)()){
 	func = event;
 	switch(line){
 		case 0:
@@ -33,6 +33,7 @@ void Init_EXTI(uint32_t line, uint32_t priority, void (*event)()){
 			NVIC_EnableIRQ(EXTI1_IRQn);
 			break;
 		}
+		//...
 		case 2:
 		{
 			NVIC_SetPriority(EXTI2_IRQn, priority);
@@ -51,6 +52,7 @@ void Init_EXTI(uint32_t line, uint32_t priority, void (*event)()){
 			NVIC_EnableIRQ(EXTI4_IRQn);
 			break;
 		}
+		//...
 		case 5:
 		case 6:
 		case 7:
@@ -80,7 +82,7 @@ void EXTI0_IRQHandler(void){
 		EXTI->PR |= (1<<0);  
 	}
 }
-void NVIC_ADD_EXTI0_IRQ(void);
+
 
 void EXTI1_IRQHandler(void){
 	if (EXTI->PR & (1<<1)) {
